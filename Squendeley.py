@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 import sqlite3
 import os
+import sys
 
 import re
 import lxml.etree
@@ -118,14 +119,14 @@ class Squendeley(object):
                           }
             if len(bad_cols):
                 for i in bad_cols.keys():
-                    print i, bad_cols[i], names[i]
+                    print >>sys.stderr, i, bad_cols[i], names[i], table
 
                     for val in bad_cols[i]:
                         if replace_int.has_key(val):
                             sql = "update %s set %s=%s where %s='%s'" % \
                                 (table, names[i], replace_int[val],
                                         names[i], val)
-                            print sql
+                            print >>sys.stderr, sql
                             c.execute(sql)
 
 
@@ -189,7 +190,7 @@ class Squendeley(object):
 
         self.db = SqlSoup(self.meta)
 
-        self.db.Documents.relate('contributors', self.db.DocumentContributors)
+        self.db.Documents.relate('contributors', self.db.DocumentContributors, lazy=True)
         self.db.Documents.relate('url', self.db.DocumentUrls)
         self.db.Documents.relate('tags', self.db.DocumentTags)
 
